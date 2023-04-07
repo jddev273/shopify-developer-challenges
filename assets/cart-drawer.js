@@ -1,3 +1,36 @@
+class CartUpsellAddButton extends HTMLElement {
+  constructor() {
+    super();
+
+    this.addEventListener('click', async (event) => {
+      event.preventDefault();
+
+      await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          id: this.dataset.id,
+          quantity: 1,
+        }),
+      }).then(() => {
+        fetch('/cart?sections=cart-drawer')
+          .then((response) => response.json())
+          .then((data) => {
+            const html = new DOMParser().parseFromString(data['cart-drawer'], 'text/html');
+            const cartDrawer = html.querySelector('cart-drawer');
+            const existingCartDrawer = document.querySelector('cart-drawer');
+
+            existingCartDrawer.innerHTML = cartDrawer.innerHTML;
+          })
+      });
+    });
+  }
+}
+
+customElements.define('cart-upsell-add-button', CartUpsellAddButton);
+
 class CartDrawer extends HTMLElement {
   constructor() {
     super();
@@ -28,7 +61,7 @@ class CartDrawer extends HTMLElement {
     const cartDrawerNote = this.querySelector('[id^="Details-"] summary');
     if (cartDrawerNote && !cartDrawerNote.hasAttribute('role')) this.setSummaryAccessibility(cartDrawerNote);
     // here the animation doesn't seem to always get triggered. A timeout seem to help
-    setTimeout(() => {this.classList.add('animate', 'active')});
+    setTimeout(() => { this.classList.add('animate', 'active') });
 
     this.addEventListener('transitionend', () => {
       const containerToTrapFocusOn = this.classList.contains('is-empty') ? this.querySelector('.drawer__inner-empty') : document.getElementById('CartDrawer');
@@ -49,7 +82,7 @@ class CartDrawer extends HTMLElement {
     cartDrawerNote.setAttribute('role', 'button');
     cartDrawerNote.setAttribute('aria-expanded', 'false');
 
-    if(cartDrawerNote.nextElementSibling.getAttribute('id')) {
+    if (cartDrawerNote.nextElementSibling.getAttribute('id')) {
       cartDrawerNote.setAttribute('aria-controls', cartDrawerNote.nextElementSibling.id);
     }
 
@@ -66,7 +99,7 @@ class CartDrawer extends HTMLElement {
     this.getSectionsToRender().forEach((section => {
       const sectionElement = section.selector ? document.querySelector(section.selector) : document.getElementById(section.id);
       sectionElement.innerHTML =
-          this.getSectionInnerHTML(parsedState.sections[section.id], section.selector);
+        this.getSectionInnerHTML(parsedState.sections[section.id], section.selector);
     }));
 
     setTimeout(() => {

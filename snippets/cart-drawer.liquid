@@ -109,6 +109,9 @@
                   </thead>
 
                   <tbody role="rowgroup">
+                    
+                    {% assign upsell_id = settings.upsell_product_picker.variants[0].id %}
+                    {% assign upsell_id_found = false %}
                     {%- for item in cart.items -%}
                       <tr id="CartDrawer-Item-{{ item.index | plus: 1 }}" class="cart-item" role="row">
                         <td class="cart-item__media" role="cell" headers="CartDrawer-ColumnProductImage">
@@ -337,7 +340,41 @@
                           </div>
                         </td>
                       </tr>
+                      {% if item.variant.id == upsell_id %}
+                        {% assign upsell_id_found = true %}
+                      {% endif %}
                     {%- endfor -%}
+                    {% if settings.upsell_product_picker != blank and upsell_id_found == false %}
+                      <tr class="upsell-product" role="row">
+                        <td class="upsell-product__headline" colspan="4">
+                          {{ settings.upsell_product_headline }}
+                        </td>
+                      </tr>
+                      <tr class="cart-item" role="row">
+                        <td class="cart-item__media" role="cell">
+                          <img
+                            class="cart-item__image"
+                            src="{{ settings.upsell_product_picker.featured_image | image_url: width: 300 }}"
+                            alt="{{ settings.upsell_product_picker.featured_image.alt | escape }}"
+                            loading="lazy"
+                            width="150"
+                            height="{{ 150 | divided_by: settings.upsell_product_picker.featured_image.aspect_ratio | ceil }}"
+                          >
+                        </td>
+                        <td class="cart-item__details" role="cell" colspan="2">
+                          <a href="{{ settings.upsell_product_picker.url }}" class="cart-item__name h4 break">
+                            {{- settings.upsell_product_picker.title -}}
+                          </a>
+                          <div>
+                            {{ settings.upsell_product_picker.price | money }}
+                          </div>
+                        </td>
+                        <td class="right">
+                          <cart-upsell-add-button data-id="{{ settings.upsell_product_picker.variants[0].id }}">
+                            <button id="upsell-add-to-cart" class="button" style="min-width: unset;" name="checkout">Add</a></button></cart-upsell-add-button>
+                        </td>
+                      </tr>
+                    {% endif %}
                   </tbody>
                 </table>
               </div>

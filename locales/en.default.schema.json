@@ -357,6 +357,17 @@
             "label": "Collection",
             "info": "Visible when cart drawer is empty."
           }
+        },
+        "upsell_product": {
+          "header": "Upsell Product",
+          "product_picker": {
+            "label": "Select a product",
+            "info": "Choose a product to display as an upsell in the cart."
+          },
+          "headline": {
+            "label": "Upsell headline",
+            "info": "Enter a headline to be displayed above the upsell product."
+          }
         }
       }
     },
